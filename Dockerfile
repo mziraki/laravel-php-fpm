@@ -67,6 +67,7 @@ RUN docker-php-ext-install \
     pdo_pgsql \
     pdo_sqlite \
     pcntl \
+    sockets \
     tokenizer \
     xml \
     zip
