@@ -10,9 +10,7 @@ RUN apk add --no-cache --virtual .build-deps \
     imagemagick-dev \
     libtool \
     libxml2-dev \
-    pcre-dev \
-    postgresql-dev \
-    sqlite-dev
+    pcre-dev
 
 # Install production dependencies
 RUN apk add --no-cache \
@@ -36,23 +34,18 @@ RUN apk add --no-cache \
     oniguruma-dev \
     yarn \
     openssh-client \
-    postgresql-libs \
     rsync \
     zlib-dev
 
 # Install PECL and PEAR extensions
 RUN pecl install \
     imagick \
-    mongodb \
-    redis \
-    xdebug
+    redis
 
 # Enable PECL and PEAR extensions
 RUN docker-php-ext-enable \
     imagick \
-    mongodb \
-    redis \
-    xdebug
+    redis
 
 # Configure php extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
@@ -69,8 +62,6 @@ RUN docker-php-ext-install \
     mbstring \
     pdo \
     pdo_mysql \
-    pdo_pgsql \
-    pdo_sqlite \
     pcntl \
     sockets \
     tokenizer \
