@@ -3,6 +3,9 @@ FROM php:7.4-fpm-alpine
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Install nano editor
+RUN apk add nano
+
 # Install dev dependencies
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
