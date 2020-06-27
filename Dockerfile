@@ -1,5 +1,8 @@
 FROM php:7.4-fpm-alpine
 
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 # Install dev dependencies
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
@@ -40,16 +43,16 @@ RUN apk add --no-cache \
 # Install PECL and PEAR extensions
 RUN pecl install \
     imagick \
-	mongodb \
+    mongodb \
     redis \
-	xdebug
+    xdebug
 
 # Enable PECL and PEAR extensions
 RUN docker-php-ext-enable \
     imagick \
-	mongodb \
+    mongodb \
     redis \
-	xdebug
+    xdebug
 
 # Configure php extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
