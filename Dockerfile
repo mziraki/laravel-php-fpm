@@ -52,6 +52,7 @@ RUN docker-php-ext-enable \
 
 # Configure php extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-configure opcache --enable-opcache
 
 # Install php extensions
 RUN docker-php-ext-install \
@@ -63,6 +64,7 @@ RUN docker-php-ext-install \
     iconv \
     intl \
     mbstring \
+    opcache \
     pdo \
     pdo_mysql \
     pcntl \
@@ -76,6 +78,9 @@ ENV COMPOSER_HOME /composer
 ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+
+# Install composer plugin that downloads packages in parallel to speed up the installation process
+RUN composer global require hirak/prestissimo
 
 # Install PHP_CodeSniffer
 RUN composer global require "squizlabs/php_codesniffer=*"
