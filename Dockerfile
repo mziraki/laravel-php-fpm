@@ -80,14 +80,14 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_MEMORY_LIMIT -1
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
 
-# Install composer plugin that downloads packages in parallel to speed up the installation process
-RUN composer global require hirak/prestissimo
-
 # Install PHP_CodeSniffer
 RUN composer global require "squizlabs/php_codesniffer=*"
 
 # Install PHP Coding Standards Fixer
 RUN composer global require friendsofphp/php-cs-fixer
+
+# Install Laravel Envoy
+RUN composer global require laravel/envoy
 
 # Cleanup dev dependencies
 RUN apk del -f .build-deps
