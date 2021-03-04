@@ -3,9 +3,6 @@ FROM php:7.4-fpm-alpine
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Install nano editor
-RUN apk add nano
-
 # Install dev dependencies
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
@@ -33,13 +30,16 @@ RUN apk add --no-cache \
     libzip-dev \
     make \
     mysql-client \
+    nano \
     nodejs \
     nodejs-npm \
     oniguruma-dev \
-    yarn \
     openssh-client \
     rsync \
-    zlib-dev
+    util-linux \
+    yarn \
+    zlib-dev \
+    zsh
 
 # Install PECL and PEAR extensions
 RUN pecl install \
@@ -73,6 +73,22 @@ RUN docker-php-ext-install \
     tokenizer \
     xml \
     zip
+
+# Install git flow
+RUN sh -c "$(wget https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -O -)" && rm -rf gitflow
+
+# Install oh-my-zsh
+RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+
+# Customize oh-my-zsh theme
+RUN sed -i '1,2 s/^/#/' ~/.oh-my-zsh/themes/robbyrussell.zsh-theme
+RUN sed -i '3 i PROMPT="%(?:%{\$fg_bold[green]%}➜ %n:%{\$fg_bold[red]%}➜ )"' ~/.oh-my-zsh/themes/robbyrussell.zsh-theme
+RUN sed -i "4 i PROMPT+=' %{\$fg[cyan]%}%~%{\$reset_color%} \$(git_prompt_info)'" ~/.oh-my-zsh/themes/robbyrussell.zsh-theme
+
+# Customize oh-my-zsh plugins
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+RUN sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting laravel npm git-flow-avh)/g' ~/.zshrc
 
 # Install composer
 ENV COMPOSER_HOME /composer
