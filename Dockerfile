@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:8-fpm-alpine
 
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
@@ -41,14 +41,18 @@ RUN apk add --no-cache \
     zlib-dev \
     zsh
 
+# Install Imagick
+# Version is not officially released https://pecl.php.net/get/imagick but following works for PHP 8
+RUN mkdir -p /usr/src/php/ext/imagick; \
+    curl -fsSL https://github.com/Imagick/imagick/archive/master.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
+    docker-php-ext-install imagick;
+
 # Install PECL and PEAR extensions
 RUN pecl install \
-    imagick \
     redis
 
 # Enable PECL and PEAR extensions
 RUN docker-php-ext-enable \
-    imagick \
     redis
 
 # Configure php extensions
@@ -73,6 +77,9 @@ RUN docker-php-ext-install \
     tokenizer \
     xml \
     zip
+
+# Configure OpCache and JIT
+RUN echo -e "opcache.enable_cli=1\nopcache.jit_buffer_size=256M" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
 # Install git flow
 RUN sh -c "$(wget https://raw.github.com/nvie/gitflow/develop/contrib/gitflow-installer.sh -O -)" && rm -rf gitflow
